@@ -1,9 +1,15 @@
+import {Routes, Route} from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import CreatePage from './pages/CreatePage';
 
 const App = () => {
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+    <div>
+      <Routes>
+        <Route index element={<HomePage/>}></Route>
+        <Route path="/create" element={<CreatePage/>}></Route>
+      </Routes>
+    </div>
   );
 };
 
