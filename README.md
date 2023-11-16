@@ -1,5 +1,13 @@
 # W4156 Project Front End
 
+
+## New features in this branch
+
+- homepage: display the facilities info for the user
+- persistent login: store the logged in state in local storage
+- logout: add log out as drop down option
+
+
 ## Usage
 Install dependencies: `npm install`
 

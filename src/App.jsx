@@ -2,14 +2,31 @@ import { Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
 import LoginPage from "./pages/LoginPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const App = () => {
-  const [username, setUsername] = useState("Login");
+  // get the username from the local storage
+  // if the name does not exist, set it to "Login"
+  var storedUserName = JSON.parse(localStorage.getItem("username"));
+  if (storedUserName === null) {
+    storedUserName = "Login";
+  }
+  // state variable: username
+  // state variable can be updated by the setter function only
+  const [username, setUsername] = useState(storedUserName);
 
   const handleLogin = (username) => {
+    // redirect user to the home page
+    // window.location.href = "/";
     setUsername(username);
+    window.location.href = "/";
   };
+
+  useEffect(() => {
+    // side effect when state variable username updates
+    // we put the username in the local storage
+    localStorage.setItem("username", JSON.stringify(username));
+  }, [username]);
 
   return (
     <div>
