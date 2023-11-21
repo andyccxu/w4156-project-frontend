@@ -1,7 +1,7 @@
 import Hello from "../components/hello";
 
 // currently, this is purely a simple demo on the use of
-// componenets and props
+// components and props
 //
 const CreatePage = () => {
   return (
