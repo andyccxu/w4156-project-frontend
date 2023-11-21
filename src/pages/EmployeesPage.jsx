@@ -203,7 +203,9 @@ const EmployeesPage = () => {
       <div className="w-1/2 max-w-screen-lg">
         {/* ... Loading and error handling */}
         {isLoading && <div>Loading...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
+        {/* {error && <div className="text-red-500">Error: {error}</div>} */}
+        {error && <div className="text-red-500"></div>}
+
         <div>
           <Modal
             isVisible={isModalVisible}
@@ -211,7 +213,11 @@ const EmployeesPage = () => {
             onCancel={handleCancelDelete}
           />
 
-          {employees.map((employee) => (
+          {/* Check if there are any employees */}
+          {employees.length === 0 && !isLoading ? (
+            <div className="text-center my-4">No employees</div>
+          ) : (
+          employees.map((employee) => (
             <div key={employee._id} className="border p-4 m-4 relative rounded shadow">
               {editEmployeeId === employee._id ? (
                 // Edit mode with labeled fields
@@ -251,7 +257,15 @@ const EmployeesPage = () => {
               </svg>
 
             </div>
-          ))}
+          ))
+        )}
+
+          {/* Add Button - Always visible
+          <div className="flex justify-center p-4">
+            <button onClick={handleAdd} className="bg-blue-500 text-white px-4 py-2 rounded hover-bg-blue-700">
+              Add
+            </button>
+          </div> */}
 
           {isAdding && (
             <div className="border p-4 m-4 relative rounded shadow">
