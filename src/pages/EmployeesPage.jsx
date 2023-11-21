@@ -64,7 +64,6 @@ const EmployeesPage = () => {
     name: '',
     email: '',
     phoneNumber: '',
-    address: '',
     skillLevel: '',
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -189,7 +188,6 @@ const EmployeesPage = () => {
         name: '',
         email: '',
         phoneNumber: '',
-        address: '',
         skillLevel: '',
         employeeOf: '',
         manager: ''
@@ -221,7 +219,6 @@ const EmployeesPage = () => {
                   <EmployeeInput label="Name" value={editedEmployee.name} onChange={(e) => handleInputChange(e, 'name')} type="text" />
                   <EmployeeInput label="Email" value={editedEmployee.email} onChange={(e) => handleInputChange(e, 'email')} type="email" />
                   <EmployeeInput label="Phone Number" value={editedEmployee.phoneNumber} onChange={(e) => handleInputChange(e, 'phoneNumber')} type="tel" />
-                  <EmployeeInput label="Address" value={editedEmployee.address} onChange={(e) => handleInputChange(e, 'address')} type="text" />
                   <EmployeeInput label="Skill Level" value={editedEmployee.skillLevel} onChange={(e) => handleInputChange(e, 'skillLevel')} type="number" />
                   <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded hover-bg-blue-700">
                     Save
@@ -233,7 +230,6 @@ const EmployeesPage = () => {
                   <p><strong>Name:</strong> {employee.name}</p>
                   <p><strong>Email:</strong> {employee.email}</p>
                   <p><strong>Phone Number:</strong> {employee.phoneNumber}</p>
-                  <p><strong>Address:</strong> {employee.address}</p>
                   <p><strong>Skill Level:</strong> {employee.skillLevel}</p>
                 </div>
               )}
@@ -263,7 +259,6 @@ const EmployeesPage = () => {
                 <EmployeeInput label="Name" value={newEmployee.name} onChange={(e) => handleNewEmployeeChange(e, 'name')} type="text" />
                 <EmployeeInput label="Email" value={newEmployee.email} onChange={(e) => handleNewEmployeeChange(e, 'email')} type="email" />
                 <EmployeeInput label="Phone Number" value={newEmployee.phoneNumber} onChange={(e) => handleNewEmployeeChange(e, 'phoneNumber')} type="tel" />
-                <EmployeeInput label="Address" value={newEmployee.address} onChange={(e) => handleNewEmployeeChange(e, 'address')} type="text" />
                 <EmployeeInput label="Skill Level" value={newEmployee.skillLevel} onChange={(e) => handleNewEmployeeChange(e, 'skillLevel')} type="number" />
                 <button onClick={handleAddSave} className="bg-blue-500 text-white px-4 py-2 rounded hover-bg-blue-700">
                   Save
