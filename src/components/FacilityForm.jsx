@@ -2,16 +2,32 @@ import { useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-const FacilityForm = ({ facility, closeModal, onUpdate }) => {
-  const [formData, setFormData] = useState({
-    facilityName: facility.facilityName || "",
-    facilityType: facility.facilityType || "",
-    operatingHoursStart: facility.operatingHours?.start || "",
-    operatingHoursEnd: facility.operatingHours?.end || "",
-    numberEmployees: facility.numberEmployees || "",
-    numberShifts: facility.numberShifts || "",
-    numberDays: facility.numberDays || "",
-  });
+const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
+  const initializeFormData = () => {
+    if (facility) {
+      return {
+        facilityName: facility.facilityName || "",
+        facilityType: facility.facilityType || "",
+        operatingHoursStart: facility.operatingHours?.start || "",
+        operatingHoursEnd: facility.operatingHours?.end || "",
+        numberEmployees: facility.numberEmployees || "",
+        numberShifts: facility.numberShifts || "",
+        numberDays: facility.numberDays || "",
+      };
+    } else {
+      return {
+        facilityName: "",
+        facilityType: "",
+        operatingHoursStart: "",
+        operatingHoursEnd: "",
+        numberEmployees: "",
+        numberShifts: "",
+        numberDays: "",
+      };
+    }
+  };
+
+  const [formData, setFormData] = useState(initializeFormData);
 
   FacilityForm.propTypes = {
     facility: PropTypes.shape({
@@ -27,6 +43,8 @@ const FacilityForm = ({ facility, closeModal, onUpdate }) => {
     }).isRequired,
     closeModal: PropTypes.func.isRequired,
     onUpdate: PropTypes.func,
+    operationType: PropTypes.string.isRequired,
+
   };
 
   const handleChange = (e) => {
@@ -49,11 +67,24 @@ const FacilityForm = ({ facility, closeModal, onUpdate }) => {
           end: formData.operatingHoursEnd,
         },
       };
-      const response = await axios.patch(
-        "http://localhost:8080/facilities",
-        updatedFormData,
-        config
-      );
+      
+      let response;
+      if (operationType === "update") {
+        response = await axios.patch(
+          "http://localhost:8080/facilities", // Update the URL as needed
+          updatedFormData,
+          config
+        );
+      } else if (operationType === "add") {
+        response = await axios.post(
+          "http://localhost:8080/facilities", // Update the URL as needed
+          updatedFormData,
+          config
+        );
+      }
+
+
+
       console.log(response.data);
       if (onUpdate) {
         onUpdate(response.data);

@@ -14,7 +14,7 @@ LabelDisplay.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-const EditModal = ({ isOpen, onClose, facility, closeModal, onUpdate }) => {
+const EditModal = ({ isOpen, onClose, facility, closeModal, onUpdate, operationType }) => {
   if (!isOpen) return null;
 
   return (
@@ -43,6 +43,7 @@ const EditModal = ({ isOpen, onClose, facility, closeModal, onUpdate }) => {
             facility={facility}
             closeModal={closeModal}
             onUpdate={onUpdate}
+            operationType={operationType}
           />
         </div>
       </div>
@@ -55,6 +56,7 @@ EditModal.propTypes = {
   facility: PropTypes.object, // Use PropTypes.shape({...}) to define specific object structure if needed
   closeModal: PropTypes.func.isRequired,
   onUpdate: PropTypes.func,
+  operationType: PropTypes.string.isRequired,
 };
 
 const HomePage = () => {
@@ -84,6 +86,10 @@ const HomePage = () => {
     setFacility(updatedFacility);
   };
 
+  const handleAddClick = () => {
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="flex justify-center items-center w-1/2 max-w-screen-lg">
@@ -98,7 +104,8 @@ const HomePage = () => {
                   onClose={() => setIsModalOpen(false)}
                   facility={facility}
                   closeModal={() => setIsModalOpen(false)}
-                  onUpdate={updateFacilityDetails} // Added this line
+                  onUpdate={updateFacilityDetails} 
+                  operationType={"update"}
                 />
               </div>
               <LabelDisplay
@@ -152,7 +159,24 @@ const HomePage = () => {
               )}
             </div>
           ) : (
-            <p>No facility</p>
+            <div className="flex justify-center items-center h-full">
+              <svg 
+                onClick={handleAddClick}
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              {isModalOpen && (
+              <EditModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                facility={facility}
+                closeModal={() => setIsModalOpen(false)}
+                onUpdate={updateFacilityDetails} 
+                operationType="add"
+              />
+            )}
+            </div>
+            
           )}
         </div>
       </div>
