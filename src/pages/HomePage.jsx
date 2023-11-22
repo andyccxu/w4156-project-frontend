@@ -58,7 +58,7 @@ EditModal.propTypes = {
 };
 
 const HomePage = () => {
-  const [facility, setFacility] = useState([]);
+  const [facility, setFacility] = useState(null);
   const getFacility = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -66,9 +66,9 @@ const HomePage = () => {
 
       const response = await axios.get("http://localhost:8080/facilities");
       setFacility(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
+      // setFacility(null);
     }
   };
   useEffect(() => {
@@ -152,7 +152,7 @@ const HomePage = () => {
               )}
             </div>
           ) : (
-            <p>No facilities</p>
+            <p>No facility</p>
           )}
         </div>
       </div>
