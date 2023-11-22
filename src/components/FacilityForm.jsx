@@ -44,7 +44,6 @@ const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
     closeModal: PropTypes.func.isRequired,
     onUpdate: PropTypes.func,
     operationType: PropTypes.string.isRequired,
-
   };
 
   const handleChange = (e) => {
@@ -67,7 +66,7 @@ const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
           end: formData.operatingHoursEnd,
         },
       };
-      
+
       let response;
       if (operationType === "update") {
         response = await axios.patch(
@@ -82,8 +81,6 @@ const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
           config
         );
       }
-
-
 
       console.log(response.data);
       if (onUpdate) {
@@ -132,15 +129,21 @@ const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
           >
             Type
           </label>
-          <input
+          <select
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="facilityType"
             name="facilityType"
-            type="text"
-            placeholder={facility ? facility.facilityType : "Facility Type"}
             value={formData.facilityType}
             onChange={handleChange}
-          />
+          >
+            <option value="">select facility type</option>
+            <option value="hospital">hospital</option>
+            <option value="restaurant">restaurant</option>
+            <option value="retail">retail</option>
+            <option value="office">office</option>
+            <option value="school">school</option>
+            <option value="other">other</option>
+          </select>
         </div>
 
         <div className="mb-4">
