@@ -9,7 +9,7 @@ import UserStatus from "./components/UserStatus";
 const App = () => {
   // get the username from the local storage
   // if the name does not exist, set it to "Login"
-  var storedUserName = JSON.parse(localStorage.getItem("username"));
+  var storedUserName = localStorage.getItem("username");
   if (storedUserName === null) {
     storedUserName = "Login";
   }
@@ -32,7 +32,7 @@ const App = () => {
   useEffect(() => {
     // side effect when state variable username updates
     // we put the username in the local storage
-    localStorage.setItem("username", JSON.stringify(username));
+    localStorage.setItem("username", username);
 
     if (username === "Login") {
       localStorage.setItem("auth", false);
