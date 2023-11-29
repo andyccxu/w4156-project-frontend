@@ -89,13 +89,18 @@ const App = () => {
             isAuthenticated ? <CreatePage /> : <Navigate to="/login" replace />
           }
         />
-        <Route index element={<HomePage />}></Route>
-        <Route path="/create" element={<CreatePage />}></Route>
         <Route
-          path="/login"
-          element={<LoginPage onLogin={handleLogin} />}
-        ></Route>
-        <Route path="/employees" element={<EmployeesPage />}></Route>
+          path="/employees"
+          element={
+            isAuthenticated ? (
+              <EmployeesPage />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
       </Routes>
     </div>
   );
