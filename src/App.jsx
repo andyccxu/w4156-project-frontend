@@ -6,6 +6,7 @@ import CreatePage from "./pages/CreatePage";
 import LoginPage from "./pages/LoginPage";
 import UserStatus from "./components/UserStatus";
 import EmployeesPage from "./pages/EmployeesPage";
+import SchedulesPage from "./pages/SchedulesPage";
 
 const App = () => {
   // get the username from the local storage
@@ -53,12 +54,6 @@ const App = () => {
           </Link>
           {/* aligned to the right in the nav bar */}
           <div className="flex justify-between space-x-5">
-            {/* <Link to="/create">
-              <div className="text-white">Create Schedule</div>
-            </Link>
-            <Link to="/employees" className="text-white">
-              Employees
-            </Link> */}
             <div>
               {username != "Login" ? (
                 <div className="text-white">
@@ -94,6 +89,17 @@ const App = () => {
           element={
             isAuthenticated ? (
               <EmployeesPage />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+<Route
+          path="/schedules"
+          element={
+            isAuthenticated ? (
+              <SchedulesPage />
             ) : (
               <Navigate to="/login" replace />
             )

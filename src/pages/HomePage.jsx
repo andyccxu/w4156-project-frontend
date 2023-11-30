@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import FacilityForm from "../components/FacilityForm";
 import PropTypes from "prop-types";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 const LabelDisplay = ({ label, value }) => (
@@ -210,9 +210,12 @@ const HomePage = () => {
               <Link to="/employees" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
                 Employees
               </Link>
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
+                {/* <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
                   Schedules
-                </button>
+                </button> */}
+              <Link to="/schedules" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
+                Schedules
+              </Link>
               </div>
               {!isEditModalOpen && (
                 <div className="absolute top-3 right-3 flex flex-col items-end">
