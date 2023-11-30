@@ -50,7 +50,7 @@ const App = () => {
         <div className="container mx-auto p-2 flex justify-between">
           {/* logo directs us to the home page */}
           <Link to="/">
-            <h2 className="text-white text-2xl font-bold">Our App logo</h2>
+            <h2 className="text-white text-2xl font-bold">Optistaff</h2>
           </Link>
           {/* aligned to the right in the nav bar */}
           <div className="flex justify-between space-x-5">
