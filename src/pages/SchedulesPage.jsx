@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -35,15 +36,12 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
 
 const SchedulesPage = () => {
   const [schedules, setSchedules] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [employeeNames, setEmployeeNames] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scheduleToDelete, setScheduleToDelete] = useState(null);
 
   useEffect(() => {
     const fetchSchedules = async () => {
-      setIsLoading(true); // Set loading to true before the request
       try {
         const token = localStorage.getItem("jwtToken");
         if (!token) {
@@ -57,12 +55,9 @@ const SchedulesPage = () => {
         });
 
         setSchedules(response.data);
-        fetchEmployeeNames(response.data); // Call the function to fetch employee names
+        fetchEmployeeNames(response.data);
       } catch (err) {
-        setError(err.message);
         console.error("Error fetching schedules:", err.message);
-      } finally {
-        setIsLoading(false); // Reset loading state
       }
     };
 
