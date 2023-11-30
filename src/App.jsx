@@ -53,12 +53,12 @@ const App = () => {
           </Link>
           {/* aligned to the right in the nav bar */}
           <div className="flex justify-between space-x-5">
-            <Link to="/create">
+            {/* <Link to="/create">
               <div className="text-white">Create Schedule</div>
             </Link>
             <Link to="/employees" className="text-white">
               Employees
-            </Link>
+            </Link> */}
             <div>
               {username != "Login" ? (
                 <div className="text-white">

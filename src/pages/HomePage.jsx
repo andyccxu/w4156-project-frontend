@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import FacilityForm from "../components/FacilityForm";
 import PropTypes from "prop-types";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
+
 
 const LabelDisplay = ({ label, value }) => (
   <>
@@ -205,9 +207,9 @@ const HomePage = () => {
                 }
               />
               <div className="flex flex-wrap justify-between mt-4 gap-2">
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
-                  Employees
-                </button>
+              <Link to="/employees" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
+                Employees
+              </Link>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
                   Schedules
                 </button>
