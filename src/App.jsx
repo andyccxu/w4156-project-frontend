@@ -2,13 +2,15 @@ import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import HomePage from "./pages/HomePage";
-import CreatePage from "./pages/CreatePage";
+// import CreatePage from "./pages/CreatePage";
 import LoginPage from "./pages/LoginPage";
 import UserStatus from "./components/UserStatus";
 import EmployeesPage from "./pages/EmployeesPage";
 import SchedulesPage from "./pages/SchedulesPage";
 
 const App = () => {
+
+
   // get the username from the local storage
   // if the name does not exist, set it to "Login"
   var storedUserName = localStorage.getItem("username");
@@ -28,7 +30,7 @@ const App = () => {
     // window.location.href = "/";
     setUsername(username);
     setIsAuthenticated(true);
-    window.location.href = "/";
+    window.location.href = "/home"; // Redirect to home page
   };
 
   useEffect(() => {
@@ -72,18 +74,19 @@ const App = () => {
       </nav>
       {/* routes */}
       <Routes>
+        <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
         <Route
-          path="/"
+          path="/home"
           element={
-            isAuthenticated ? <HomePage /> : <Navigate to="/login" replace />
+            isAuthenticated ? <HomePage /> : <Navigate to="/" replace />
           }
         />
-        <Route
+        {/* <Route
           path="/create"
           element={
             isAuthenticated ? <CreatePage /> : <Navigate to="/login" replace />
           }
-        />
+        /> */}
         <Route
           path="/employees"
           element={
