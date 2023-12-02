@@ -23,6 +23,88 @@ EmployeeInput.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
+const NotifModal = ({ isVisible, employee, handleNotifSubmit, onClose }) => {
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    // Reset message when the modal becomes visible
+    if (isVisible) {
+      setMessage("");
+    }
+  }, [isVisible]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    handleNotifSubmit(employee, message);
+  };
+
+  return (
+    isVisible && (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        {/* Modal overlay */}
+        <div className="fixed inset-0 bg-black opacity-50"></div>
+        <div className="relative z-10 bg-white p-4 rounded-md shadow-md">
+          <p className="mb-4">
+            <strong>Notify {employee.name}</strong>
+          </p>
+
+          <form
+            onSubmit={onSubmit}
+            className="flex flex-col space-y-4 items-center"
+          >
+            <div>
+              <label className="flex flex-col w-64">
+                Message
+                <input
+                  type="text"
+                  placeholder="hello!"
+                  value={message}
+                  className="border-2 border-black mt-2 p-1 h-11"
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
+                />
+              </label>
+            </div>
+            <button
+              type="submit"
+              className="bg-white-500 text-black px-4 py-2 rounded hover:bg-slate-400 border border-blue border-1"
+            >
+              Send notif
+            </button>
+          </form>
+          {/* Close Icon */}
+          <svg
+            onClick={onClose}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-7 h-7 absolute top-3 right-3 cursor-pointer hover:text-red-500"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
+    )
+  );
+};
+
+// Defining PropTypes for NotifModal
+NotifModal.propTypes = {
+  isVisible: PropTypes.bool.isRequired, 
+  employee: PropTypes.shape({
+    name: PropTypes.string,
+    _id: PropTypes.string,
+  }), 
+  handleNotifSubmit: PropTypes.func.isRequired, 
+  onClose: PropTypes.func.isRequired, 
+};
+
 const Modal = ({ isVisible, onConfirm, onCancel }) => {
   return (
     isVisible && (
@@ -74,6 +156,8 @@ const EmployeesPage = () => {
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isNotifModalVisible, setIsNotifModalVisible] = useState(false);
+  const [employeeToNotify, setEmployeeToNotify] = useState(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -101,6 +185,43 @@ const EmployeesPage = () => {
 
     fetchEmployees();
   }, []);
+
+  const handleNotifClick = (employee) => {
+    setEmployeeToNotify(employee);
+    setIsNotifModalVisible(true);
+  };
+
+  const handleNotifSubmit = async (employee, message) => {
+    try {
+      let employeeId = employee._id;
+
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        throw new Error("Authorization token not found");
+      }
+
+      const notification = {
+        employeeId,
+        message,
+      };
+
+      const response = await axios.post(
+        "http://localhost:8080/notifications",
+        notification,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Notification sent:", response.data);
+
+      setEmployeeToNotify(null);
+      setIsNotifModalVisible(false);
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  };
 
   const handleEditClick = (employee) => {
     setEditEmployeeId(employee._id);
@@ -230,6 +351,12 @@ const EmployeesPage = () => {
             onConfirm={handleConfirmDelete}
             onCancel={handleCancelDelete}
           />
+          <NotifModal
+            isVisible={isNotifModalVisible}
+            employee={employeeToNotify}
+            handleNotifSubmit={handleNotifSubmit}
+            onClose={() => setIsNotifModalVisible(false)}
+          />
 
           {/* Check if there are any employees */}
           {employees.length === 0 && !isLoading ? (
@@ -306,6 +433,22 @@ const EmployeesPage = () => {
                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                   />
                 </svg>
+                <svg
+                  onClick={() => handleNotifClick(employee)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-7 h-7 absolute top-12 right-2 cursor-pointer hover:fill-yellow-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+                  />
+                </svg>
+
                 <svg
                   onClick={() => handleDeleteClick(employee)}
                   xmlns="http://www.w3.org/2000/svg"
