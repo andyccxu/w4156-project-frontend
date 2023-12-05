@@ -192,7 +192,9 @@ const SchedulesPage = () => {
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleConfirmDelete}
         />
-        <h1 className="text-2xl font-bold mb-4">Schedules</h1>
+        <h1 className="flex justify-center text-2xl font-bold p-4">
+          Schedules
+        </h1>
         <ul>
           {schedules.map((schedule) => (
             <li key={schedule._id} className="mb-4">
