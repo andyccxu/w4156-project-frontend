@@ -158,7 +158,10 @@ const EmployeesPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isNotifModalVisible, setIsNotifModalVisible] = useState(false);
   const [employeeToNotify, setEmployeeToNotify] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
+  
+  //GET ALL EMPLOYEES, GET ONE EMPLOYEE, GET ALL NOTIFICATIONS,
   useEffect(() => {
     const fetchEmployees = async () => {
       setIsLoading(true); // Set loading to true before the request
@@ -183,7 +186,52 @@ const EmployeesPage = () => {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+          throw new Error("No authorization token found");
+        }
+    
+        // Fetch notifications
+        const response = await axios.get("http://localhost:8080/notifications", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        const initialNotifications = response.data;
+        const updatedNotifications = await Promise.all(
+          initialNotifications.map(async (notification) => {
+            try {
+              const employeeResponse = await axios.get(`http://localhost:8080/employees/${notification.employeeId}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+    
+              console.log(employeeResponse.data)
+              return { ...notification, employeeName: employeeResponse.data.employee.name };
+            } catch (err) {
+              console.error("Error fetching employee details:", err.message);
+              // In case of an error, add a placeholder or handle as needed
+              return { ...notification, employeeName: "Unknown" };
+            }
+          })
+        );
+    
+        // Update notifications state with enriched data
+        setNotifications(updatedNotifications);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching notifications:", err.message);
+      }
+    };
+    
+
     fetchEmployees();
+    fetchNotifications();
+
   }, []);
 
   const handleNotifClick = (employee) => {
@@ -191,6 +239,7 @@ const EmployeesPage = () => {
     setIsNotifModalVisible(true);
   };
 
+  //POST NOTIFICATION
   const handleNotifSubmit = async (employee, message) => {
     try {
       let employeeId = employee._id;
@@ -215,6 +264,15 @@ const EmployeesPage = () => {
         },
       );
       console.log("Notification sent:", response.data);
+      // Add the new notification to the notifications state
+      const newNotification = response.data; // Assuming response contains the new notification data
+      setNotifications(prevNotifications => [
+        ...prevNotifications,
+        { 
+          ...newNotification, 
+          employeeName: employee.name // Add employee name to the new notification
+        }
+      ]);
 
       setEmployeeToNotify(null);
       setIsNotifModalVisible(false);
@@ -233,6 +291,7 @@ const EmployeesPage = () => {
     setIsModalVisible(true);
   };
 
+  //DELETE EMPLOYEE
   const handleConfirmDelete = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -271,6 +330,7 @@ const EmployeesPage = () => {
     setEditedEmployee({ ...editedEmployee, [field]: e.target.value });
   };
 
+  //UPDATE EMPLOYEE
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -304,6 +364,7 @@ const EmployeesPage = () => {
     setNewEmployee({ ...newEmployee, [field]: e.target.value });
   };
 
+  //POST EMPLOYEE
   const handleAddSave = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -344,7 +405,9 @@ const EmployeesPage = () => {
         {isLoading && <div>Loading...</div>}
         {/* {error && <div className="text-red-500">Error: {error}</div>} */}
         {error && <div className="text-red-500"></div>}
-
+        <div>
+          <h1 className="flex justify-center text-2xl font-bold mt-4">Employees</h1>
+        </div>
         <div>
           <Modal
             isVisible={isModalVisible}
@@ -520,14 +583,31 @@ const EmployeesPage = () => {
             </div>
           )}
         </div>
-        <div className="flex justify-center p-4">
+        <div className="flex justify-center p-3">
           <button
             onClick={handleAdd}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Add
           </button>
+          
         </div>
+
+        {/* GET NOTIFICATIONS */}
+        <div>
+        <h1 className="flex justify-center text-2xl font-bold mt-10">Past Notifications</h1>
+        {notifications.length === 0 ? (
+          <div className="text-center my-4">No notifications</div>
+        ) : (
+          [...notifications].reverse().map((notification) => (
+            <div key={notification._id} className="border p-4 m-4 relative rounded shadow">
+              <p><strong>Employee:</strong> {notification.employeeName}</p>
+              <p><strong>Message:</strong> {notification.message}</p>
+              <p><strong>Date:</strong> {notification.timestamp}</p>
+            </div>
+          ))
+        )}
+      </div>
       </div>
     </div>
   );
