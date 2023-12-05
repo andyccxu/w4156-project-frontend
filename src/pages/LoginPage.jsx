@@ -2,8 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-
-
 const LoginPage = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +40,7 @@ const LoginPage = (props) => {
       const response = await axios.post(
         "http://localhost:8080/auth/signup",
         signUpRequestBody,
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json" } },
       );
 
       // Handle the response from the sign-up request
@@ -53,12 +51,8 @@ const LoginPage = (props) => {
       setName("");
       setSignUpEmail("");
       setSignUpPassword("");
-
     } catch (error) {
-      console.error(
-        "Error during sign up:",
-        error.response?.data || error.message
-      );
+      alert("Error during sign up:", error.response?.data || error.message);
     }
   };
 
@@ -74,7 +68,7 @@ const LoginPage = (props) => {
     try {
       const response = await axios.post(
         "http://localhost:8080/auth/login",
-        requestBody
+        requestBody,
       );
       const token = response.data.token;
 
@@ -87,7 +81,8 @@ const LoginPage = (props) => {
       // call onLogin prop with the user email
       props.onLogin(requestBody.email);
     } catch (error) {
-      console.error(error);
+      alert(error);
+      alert("Incorrect username or password");
     }
   };
 

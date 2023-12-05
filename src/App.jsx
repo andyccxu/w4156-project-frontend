@@ -9,8 +9,6 @@ import EmployeesPage from "./pages/EmployeesPage";
 import SchedulesPage from "./pages/SchedulesPage";
 
 const App = () => {
-
-
   // get the username from the local storage
   // if the name does not exist, set it to "Login"
   var storedUserName = localStorage.getItem("username");
@@ -22,7 +20,7 @@ const App = () => {
   const [username, setUsername] = useState(storedUserName);
   // is the user logged in/authenticated?
   const [isAuthenticated, setIsAuthenticated] = useState(
-    () => JSON.parse(localStorage.getItem("auth")) || false
+    () => JSON.parse(localStorage.getItem("auth")) || false,
   );
 
   const handleLogin = (username) => {
@@ -77,9 +75,7 @@ const App = () => {
         <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
         <Route
           path="/home"
-          element={
-            isAuthenticated ? <HomePage /> : <Navigate to="/" replace />
-          }
+          element={isAuthenticated ? <HomePage /> : <Navigate to="/" replace />}
         />
         {/* <Route
           path="/create"
@@ -98,7 +94,7 @@ const App = () => {
           }
         />
 
-<Route
+        <Route
           path="/schedules"
           element={
             isAuthenticated ? (

@@ -72,13 +72,13 @@ const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
         response = await axios.patch(
           "http://localhost:8080/facilities", // Update the URL as needed
           updatedFormData,
-          config
+          config,
         );
       } else if (operationType === "add") {
         response = await axios.post(
           "http://localhost:8080/facilities", // Update the URL as needed
           updatedFormData,
-          config
+          config,
         );
       }
 
@@ -92,7 +92,7 @@ const FacilityForm = ({ facility, closeModal, onUpdate, operationType }) => {
     } catch (error) {
       console.error(
         "Error updating facility:",
-        error.response ? error.response.data : error.message
+        error.response ? error.response.data : error.message,
       );
       // Optional: Show error message to the user
     }

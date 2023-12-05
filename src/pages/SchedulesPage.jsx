@@ -57,7 +57,7 @@ const SchedulesPage = () => {
         setSchedules(response.data);
         fetchEmployeeNames(response.data);
       } catch (err) {
-        console.error("Error fetching schedules:", err.message);
+        alert("Error fetching schedules:", err.message);
       }
     };
 
@@ -85,7 +85,7 @@ const SchedulesPage = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         setEmployeeNames((prev) => ({
@@ -94,7 +94,7 @@ const SchedulesPage = () => {
         }));
       }
     } catch (error) {
-      console.error("Error fetching employee data:", error.message);
+      alert("Error fetching employee data:", error.message);
     }
   };
 
@@ -116,16 +116,16 @@ const SchedulesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setSchedules((prevSchedules) =>
-        prevSchedules.filter((schedule) => schedule._id !== scheduleToDelete)
+        prevSchedules.filter((schedule) => schedule._id !== scheduleToDelete),
       );
 
       setIsModalOpen(false);
     } catch (err) {
-      console.error("Error deleting schedule:", err.message);
+      alert("Error deleting schedule:", err.message);
     }
   };
 
@@ -135,7 +135,7 @@ const SchedulesPage = () => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       const facilityResponse = await axios.get(
-        "http://localhost:8080/facilities"
+        "http://localhost:8080/facilities",
       );
       const facilityId = facilityResponse.data._id;
 
@@ -147,7 +147,7 @@ const SchedulesPage = () => {
       const scheduleResponse = await axios.post(
         "http://localhost:8080/schedules/",
         { facility: facilityId },
-        { headers }
+        { headers },
       );
 
       // Append the new schedule to the existing schedules state
@@ -156,7 +156,7 @@ const SchedulesPage = () => {
         scheduleResponse.data,
       ]);
     } catch (error) {
-      console.error("Error creating schedule:", error.message);
+      alert("Error creating schedule:", error.message);
       // Optionally handle the error in UI
     }
   };

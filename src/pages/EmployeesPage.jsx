@@ -96,13 +96,13 @@ const NotifModal = ({ isVisible, employee, handleNotifSubmit, onClose }) => {
 
 // Defining PropTypes for NotifModal
 NotifModal.propTypes = {
-  isVisible: PropTypes.bool.isRequired, 
+  isVisible: PropTypes.bool.isRequired,
   employee: PropTypes.shape({
     name: PropTypes.string,
     _id: PropTypes.string,
-  }), 
-  handleNotifSubmit: PropTypes.func.isRequired, 
-  onClose: PropTypes.func.isRequired, 
+  }),
+  handleNotifSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 const Modal = ({ isVisible, onConfirm, onCancel }) => {
@@ -177,7 +177,7 @@ const EmployeesPage = () => {
         setEmployees(response.data);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching employees:", err.message);
+        alert("Error fetching employees:", err.message);
       } finally {
         setIsLoading(false); // Reset loading state
       }
@@ -212,14 +212,14 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       console.log("Notification sent:", response.data);
 
       setEmployeeToNotify(null);
       setIsNotifModalVisible(false);
     } catch (error) {
-      console.error("Error sending notification:", error);
+      alert("Error sending notification:", error);
     }
   };
 
@@ -247,18 +247,18 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       // Update the employees list by filtering out the deleted employee
       setEmployees((prevEmployees) =>
-        prevEmployees.filter((emp) => emp._id !== employeeToDelete._id)
+        prevEmployees.filter((emp) => emp._id !== employeeToDelete._id),
       );
 
       // Close the modal
       setIsModalVisible(false);
     } catch (err) {
-      console.error("Error deleting employee:", err.message);
+      alert("Error deleting employee:", err.message);
     }
   };
 
@@ -281,18 +281,18 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setEmployees(
         employees.map((emp) =>
-          emp._id === editEmployeeId ? { ...emp, ...editedEmployee } : emp
-        )
+          emp._id === editEmployeeId ? { ...emp, ...editedEmployee } : emp,
+        ),
       );
       setEditEmployeeId(null);
     } catch (err) {
       setError(err.message);
-      console.error("Error updating employee:", err.message);
+      alert("Error updating employee:", err.message);
     }
   };
 
@@ -318,7 +318,7 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setEmployees([...employees, response.data]);
@@ -333,7 +333,7 @@ const EmployeesPage = () => {
       });
     } catch (err) {
       // setError(err.message);
-      console.error("Error adding new employee:", err.message);
+      alert("Error adding new employee:", err.message);
     }
   };
 

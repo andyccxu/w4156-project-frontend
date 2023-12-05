@@ -4,7 +4,6 @@ import FacilityForm from "../components/FacilityForm";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-
 const LabelDisplay = ({ label, value }) => (
   <>
     <p className="block text-gray-700 text-lg font-bold mb-2">{label}:</p>
@@ -79,7 +78,7 @@ const DeleteModal = ({ isOpen, onClose, onDeletionSuccess }) => {
       onDeletionSuccess(); // Callback to parent component to update state
       // onClose(); // Close the modal
     } catch (error) {
-      console.error("Error deleting facility:", error.message);
+      alert("Error deleting facility:", error.message);
       // Optionally handle the error in UI
     }
   };
@@ -127,7 +126,7 @@ const HomePage = () => {
       const response = await axios.get("http://localhost:8080/facilities");
       setFacility(response.data);
     } catch (error) {
-      console.error(error);
+      alert(error);
       // setFacility(null);
     }
   };
@@ -207,15 +206,21 @@ const HomePage = () => {
                 }
               />
               <div className="flex flex-wrap justify-between mt-4 gap-2">
-              <Link to="/employees" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
-                Employees
-              </Link>
+                <Link
+                  to="/employees"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto"
+                >
+                  Employees
+                </Link>
                 {/* <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
                   Schedules
                 </button> */}
-              <Link to="/schedules" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto">
-                Schedules
-              </Link>
+                <Link
+                  to="/schedules"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full w-full sm:w-auto"
+                >
+                  Schedules
+                </Link>
               </div>
               {!isEditModalOpen && (
                 <div className="absolute top-3 right-3 flex flex-col items-end">
