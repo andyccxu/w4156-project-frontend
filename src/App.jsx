@@ -20,7 +20,7 @@ const App = () => {
   const [username, setUsername] = useState(storedUserName);
   // is the user logged in/authenticated?
   const [isAuthenticated, setIsAuthenticated] = useState(
-    () => JSON.parse(localStorage.getItem("auth")) || false,
+    () => JSON.parse(localStorage.getItem("auth")) || false
   );
 
   const handleLogin = (username) => {
@@ -72,10 +72,12 @@ const App = () => {
       </nav>
       {/* routes */}
       <Routes>
-        <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
         <Route
           path="/home"
-          element={isAuthenticated ? <HomePage /> : <Navigate to="/" replace />}
+          element={
+            isAuthenticated ? <HomePage /> : <Navigate to="/login" replace />
+          }
         />
         {/* <Route
           path="/create"
@@ -105,7 +107,16 @@ const App = () => {
           }
         />
 
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/home" replace />
+            ) : (
+              <LoginPage onLogin={handleLogin} />
+            )
+          }
+        />
       </Routes>
     </div>
   );

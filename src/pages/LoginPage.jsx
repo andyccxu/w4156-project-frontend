@@ -40,7 +40,7 @@ const LoginPage = (props) => {
       const response = await axios.post(
         "http://localhost:8080/auth/signup",
         signUpRequestBody,
-        { headers: { "Content-Type": "application/json" } },
+        { headers: { "Content-Type": "application/json" } }
       );
 
       // Handle the response from the sign-up request
@@ -52,7 +52,11 @@ const LoginPage = (props) => {
       setSignUpEmail("");
       setSignUpPassword("");
     } catch (error) {
-      alert("Error during sign up:", error.response?.data || error.message);
+      console.log(
+        "Error during sign up:",
+        error.response?.data || error.message
+      );
+      alert("The email already exists!");
     }
   };
 
@@ -68,7 +72,7 @@ const LoginPage = (props) => {
     try {
       const response = await axios.post(
         "http://localhost:8080/auth/login",
-        requestBody,
+        requestBody
       );
       const token = response.data.token;
 
@@ -81,7 +85,6 @@ const LoginPage = (props) => {
       // call onLogin prop with the user email
       props.onLogin(requestBody.email);
     } catch (error) {
-      alert(error);
       alert("Incorrect username or password");
     }
   };
