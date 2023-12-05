@@ -160,7 +160,6 @@ const EmployeesPage = () => {
   const [employeeToNotify, setEmployeeToNotify] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
-  
   //GET ALL EMPLOYEES, GET ONE EMPLOYEE, GET ALL NOTIFICATIONS,
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -192,26 +191,35 @@ const EmployeesPage = () => {
         if (!token) {
           throw new Error("No authorization token found");
         }
-    
+
         // Fetch notifications
-        const response = await axios.get("http://localhost:8080/notifications", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    
+        const response = await axios.get(
+          "http://localhost:8080/notifications",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         const initialNotifications = response.data;
         const updatedNotifications = await Promise.all(
           initialNotifications.map(async (notification) => {
             try {
-              const employeeResponse = await axios.get(`http://localhost:8080/employees/${notification.employeeId}`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
-    
-              console.log(employeeResponse.data)
-              return { ...notification, employeeName: employeeResponse.data.employee.name };
+              const employeeResponse = await axios.get(
+                `http://localhost:8080/employees/${notification.employeeId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              console.log(employeeResponse.data);
+              return {
+                ...notification,
+                employeeName: employeeResponse.data.employee.name,
+              };
             } catch (err) {
               console.error("Error fetching employee details:", err.message);
               // In case of an error, add a placeholder or handle as needed
@@ -219,7 +227,7 @@ const EmployeesPage = () => {
             }
           })
         );
-    
+
         // Update notifications state with enriched data
         setNotifications(updatedNotifications);
       } catch (err) {
@@ -227,11 +235,9 @@ const EmployeesPage = () => {
         console.error("Error fetching notifications:", err.message);
       }
     };
-    
 
     fetchEmployees();
     fetchNotifications();
-
   }, []);
 
   const handleNotifClick = (employee) => {
@@ -261,17 +267,17 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
       console.log("Notification sent:", response.data);
       // Add the new notification to the notifications state
       const newNotification = response.data; // Assuming response contains the new notification data
-      setNotifications(prevNotifications => [
+      setNotifications((prevNotifications) => [
         ...prevNotifications,
-        { 
-          ...newNotification, 
-          employeeName: employee.name // Add employee name to the new notification
-        }
+        {
+          ...newNotification,
+          employeeName: employee.name, // Add employee name to the new notification
+        },
       ]);
 
       setEmployeeToNotify(null);
@@ -306,12 +312,12 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       // Update the employees list by filtering out the deleted employee
       setEmployees((prevEmployees) =>
-        prevEmployees.filter((emp) => emp._id !== employeeToDelete._id),
+        prevEmployees.filter((emp) => emp._id !== employeeToDelete._id)
       );
 
       // Close the modal
@@ -341,13 +347,13 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       setEmployees(
         employees.map((emp) =>
-          emp._id === editEmployeeId ? { ...emp, ...editedEmployee } : emp,
-        ),
+          emp._id === editEmployeeId ? { ...emp, ...editedEmployee } : emp
+        )
       );
       setEditEmployeeId(null);
     } catch (err) {
@@ -379,7 +385,7 @@ const EmployeesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       setEmployees([...employees, response.data]);
@@ -406,7 +412,9 @@ const EmployeesPage = () => {
         {/* {error && <div className="text-red-500">Error: {error}</div>} */}
         {error && <div className="text-red-500"></div>}
         <div>
-          <h1 className="flex justify-center text-2xl font-bold mt-4">Employees</h1>
+          <h1 className="flex justify-center text-2xl font-bold mt-4">
+            Employees
+          </h1>
         </div>
         <div>
           <Modal
@@ -590,24 +598,34 @@ const EmployeesPage = () => {
           >
             Add
           </button>
-          
         </div>
 
         {/* GET NOTIFICATIONS */}
         <div>
-        <h1 className="flex justify-center text-2xl font-bold mt-10">Past Notifications</h1>
-        {notifications.length === 0 ? (
-          <div className="text-center my-4">No notifications</div>
-        ) : (
-          [...notifications].reverse().map((notification) => (
-            <div key={notification._id} className="border p-4 m-4 relative rounded shadow">
-              <p><strong>Employee:</strong> {notification.employeeName}</p>
-              <p><strong>Message:</strong> {notification.message}</p>
-              <p><strong>Date:</strong> {notification.timestamp}</p>
-            </div>
-          ))
-        )}
-      </div>
+          <h1 className="flex justify-center text-2xl font-bold mt-10">
+            Past Notifications
+          </h1>
+          {notifications.length === 0 ? (
+            <div className="text-center my-4">No notifications</div>
+          ) : (
+            [...notifications].reverse().map((notification) => (
+              <div
+                key={notification._id}
+                className="border p-4 m-4 relative rounded shadow"
+              >
+                <p>
+                  <strong>Employee:</strong> {notification.employeeName}
+                </p>
+                <p>
+                  <strong>Message:</strong> {notification.message}
+                </p>
+                <p>
+                  <strong>Date:</strong> {notification.timestamp}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
