@@ -13,7 +13,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
 
         {/* Modal content */}
         <div className="relative z-10 bg-white p-4 rounded-md shadow-md">
-          <p className="mb-4">Are you sure you want to delete shift?</p>
+          <p className="mb-4">Are you sure you want to delete schedule?</p>
           <div className="flex justify-center">
             <button
               onClick={onConfirm}
@@ -64,6 +64,7 @@ const SchedulesPage = () => {
     fetchSchedules();
   }, []);
 
+  //GET ONE EMPLOYEE
   const fetchEmployeeNames = async (schedules) => {
     const uniqueEmployeeIds = new Set();
     schedules.forEach((schedule) => {
@@ -79,19 +80,27 @@ const SchedulesPage = () => {
       }
 
       for (const id of uniqueEmployeeIds) {
-        const response = await axios.get(
-          `http://localhost:8080/employees/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        try {
+          const response = await axios.get(
+            `http://localhost:8080/employees/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-        setEmployeeNames((prev) => ({
-          ...prev,
-          [id]: response.data.employee.name,
-        }));
+          setEmployeeNames((prev) => ({
+            ...prev,
+            [id]: response.data.employee.name,
+          }));
+        } catch (error) {
+          // If there's an error fetching a specific employee's data, set their name to "Deleted Employee"
+          setEmployeeNames((prev) => ({
+            ...prev,
+            [id]: "Deleted Employee",
+          }));
+        }
       }
     } catch (error) {
       alert("Error fetching employee data:", error.message);
@@ -103,6 +112,7 @@ const SchedulesPage = () => {
     setIsModalOpen(true);
   };
 
+  //DELETE SCHEDULE
   const handleConfirmDelete = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -116,11 +126,11 @@ const SchedulesPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       setSchedules((prevSchedules) =>
-        prevSchedules.filter((schedule) => schedule._id !== scheduleToDelete),
+        prevSchedules.filter((schedule) => schedule._id !== scheduleToDelete)
       );
 
       setIsModalOpen(false);
@@ -129,13 +139,14 @@ const SchedulesPage = () => {
     }
   };
 
+  //POST SCHEDULE
   const handleAdd = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       const facilityResponse = await axios.get(
-        "http://localhost:8080/facilities",
+        "http://localhost:8080/facilities"
       );
       const facilityId = facilityResponse.data._id;
 
@@ -147,17 +158,29 @@ const SchedulesPage = () => {
       const scheduleResponse = await axios.post(
         "http://localhost:8080/schedules/",
         { facility: facilityId },
-        { headers },
+        { headers }
       );
 
-      // Append the new schedule to the existing schedules state
-      setSchedules((prevSchedules) => [
-        ...prevSchedules,
-        scheduleResponse.data,
-      ]);
+      const newSchedule = scheduleResponse.data;
+
+      // Update schedules state
+      setSchedules((prevSchedules) => [...prevSchedules, newSchedule]);
+
+      // Check for new employee IDs in the schedule and update names if necessary
+      for (const shift of newSchedule.shifts) {
+        if (!employeeNames[shift.employeeId]) {
+          const empResponse = await axios.get(
+            `http://localhost:8080/employees/${shift.employeeId}`,
+            { headers }
+          );
+          setEmployeeNames((prev) => ({
+            ...prev,
+            [shift.employeeId]: empResponse.data.employee.name,
+          }));
+        }
+      }
     } catch (error) {
       alert("Error creating schedule:", error.message);
-      // Optionally handle the error in UI
     }
   };
 
