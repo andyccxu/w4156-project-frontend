@@ -71,32 +71,8 @@ const SchedulesPage = () => {
   const [scheduleToDelete, setScheduleToDelete] = useState(null);
   const [isNotifModalVisible, setIsNotifModalVisible] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [employeeIds, setEmployeeIds] = useState(new Set());
-
-
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      try {
-        const token = localStorage.getItem("jwtToken");
-        if (!token) {
-          throw new Error("No authorization token found");
-        }
-
-        const response = await axios.get("http://localhost:8080/schedules", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setSchedules(response.data);
-        fetchEmployeeNames(response.data);
-      } catch (err) {
-        alert("Error fetching schedules:", err.message);
-      }
-    };
-
-    fetchSchedules();
-  }, []);
+  const [editingScheduleId, setEditingScheduleId] = useState(null);
+  const [editedSchedule, setEditedSchedule] = useState({ shifts: [] });
 
   //GET ONE EMPLOYEE
   const fetchEmployeeNames = async (schedules) => {
@@ -106,8 +82,6 @@ const SchedulesPage = () => {
         uniqueEmployeeIds.add(shift.employeeId);
       });
     });
-
-    setEmployeeIds(uniqueEmployeeIds);
 
     try {
       const token = localStorage.getItem("jwtToken");
@@ -142,6 +116,31 @@ const SchedulesPage = () => {
       alert("Error fetching employee data:", error.message);
     }
   };
+
+  //GET ALL SCHEDULES
+  const fetchSchedules = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        throw new Error("No authorization token found");
+      }
+
+      const response = await axios.get("http://localhost:8080/schedules", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setSchedules(response.data);
+      fetchEmployeeNames(response.data);
+    } catch (err) {
+      alert("Error fetching schedules:", err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
 
   const handleDeleteClick = (scheduleId) => {
     setScheduleToDelete(scheduleId);
@@ -225,47 +224,91 @@ const SchedulesPage = () => {
     setIsNotifModalVisible(true);
   };
 
+  //POST NOTIFICATIONS
   const handleNotifSubmit = async (schedule) => {
     try {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
         throw new Error("Authorization token not found");
       }
-  
-        for (const shift of schedule.shifts) {
-          try {
-            const message = `Hi! Your shift details are as follows:\nShift: ${shift.start}, ${shift.end}\n, Days: ${shift.days.join(", ")}`;
-            const Id = shift.employeeId;
-  
-            const notification = {
-              employeeId: Id,
-              message: message
-            };
-  
-            const response = await axios.post(
-              "http://localhost:8080/notifications",
-              notification,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-            console.log("Notification sent:", response.data);
-          } catch (error) {
-            console.error("Error sending notification for shift:", error);
-          }
-        
+
+      for (const shift of schedule.shifts) {
+        try {
+          const message = `Hi! Your shift details are as follows:\nShift: ${
+            shift.start
+          }, ${shift.end}\n, Days: ${shift.days.join(", ")}`;
+          const Id = shift.employeeId;
+
+          const notification = {
+            employeeId: Id,
+            message: message,
+          };
+
+          const response = await axios.post(
+            "http://localhost:8080/notifications",
+            notification,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log("Notification sent:", response.data);
+        } catch (error) {
+          console.error("Error sending notification for shift:", error);
+        }
       }
-  
+
       setIsNotifModalVisible(false);
-  
     } catch (error) {
       alert("Error sending notifications: " + error.message);
     }
   };
-  
-  
+
+  const handleEditClick = (schedule) => {
+    setEditingScheduleId(schedule._id);
+    setEditedSchedule({ ...schedule });
+  };
+
+  const handleShiftChange = (e, index, field) => {
+    const updatedShifts = editedSchedule.shifts.map((shift, idx) => {
+      if (idx === index) {
+        return { ...shift, [field]: e.target.value };
+      }
+      return shift;
+    });
+    setEditedSchedule({ ...editedSchedule, shifts: updatedShifts });
+  };
+
+  //UPDATE SCHEDULE
+  const handleSaveSchedule = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        throw new Error("Authorization token not found");
+      }
+
+      const scheduleId = editingScheduleId;
+      const response = await axios.patch(
+        `http://localhost:8080/schedules/${scheduleId}`,
+        { shifts: editedSchedule.shifts },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Updated schedule:", response.data);
+
+      setEditingScheduleId(null);
+
+      fetchSchedules();
+    } catch (error) {
+      console.error("Error updating schedule:", error.message);
+    }
+  };
 
   return (
     <div className="flex justify-center">
@@ -276,46 +319,109 @@ const SchedulesPage = () => {
           onConfirm={handleConfirmDelete}
         />
         <NotifModal
-        isVisible={isNotifModalVisible}
-        onConfirm={() => handleNotifSubmit(selectedSchedule)}
-        onCancel={() => setIsNotifModalVisible(false)}
-      />
-       
+          isVisible={isNotifModalVisible}
+          onConfirm={() => handleNotifSubmit(selectedSchedule)}
+          onCancel={() => setIsNotifModalVisible(false)}
+        />
+
         <h1 className="flex justify-center text-2xl font-bold p-4">
           Schedules
         </h1>
+
         <ul>
           {schedules.map((schedule) => (
-            
-            <li key={schedule._id} className="mb-4">
+            <li key={schedule._id} className="mb-4 mt">
               <div className="border p-4 rounded-lg shadow relative">
                 <p>
                   <span className="font-bold">Date Generated:</span>{" "}
                   {new Date(schedule.dateGenerated).toLocaleString()}
                 </p>
 
-                {schedule.shifts.map((shift) => (
-                  <div key={shift._id} className="pt-2">
-                    <p>
-                      <span className="font-bold">Name:</span>{" "}
-                      {employeeNames[shift.employeeId]}
-                    </p>
-                    <p>
-                      <span className="font-bold">Shift Start:</span>{" "}
-                      {shift.start}
-                    </p>
-                    <p>
-                      <span className="font-bold">Shift End:</span> {shift.end}
-                    </p>
-                    <p>
-                      <span className="font-bold">Days:</span>{" "}
-                      {shift.days.join(", ")}
-                    </p>
-                  </div>
-                ))}
+                <div className="mt-10 mb-8">
+                  {editingScheduleId === schedule._id ? (
+                    <>
+                      {editedSchedule.shifts.map((shift, index) => (
+                        <div
+                          key={index}
+                          className="p-2 rounded-md mt-2 mb-2 bg-gray-100"
+                        >
+                          <p>
+                            <span className="font-bold">Name:</span>{" "}
+                            {employeeNames[shift.employeeId]}
+                          </p>
+                          <p className="font-bold">Shift Start:</p>
+                          <input
+                            type="time"
+                            value={shift.start}
+                            onChange={(e) =>
+                              handleShiftChange(e, index, "start")
+                            }
+                          />
+                          <p className="font-bold">Shift End:</p>
+                          <input
+                            type="time"
+                            value={shift.end}
+                            onChange={(e) => handleShiftChange(e, index, "end")}
+                          />
+                          <p>
+                            <span className="font-bold">Days:</span>{" "}
+                            {shift.days.join(", ")}
+                          </p>
+                        </div>
+                      ))}
+                      <div className="flex justify-center mt-4">
+                        <button
+                          onClick={() => handleSaveSchedule(schedule._id)}
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    schedule.shifts.map((shift) => (
+                      <div
+                        key={shift._id}
+                        className="p-2 bg-gray-100 rounded-md mt-2 mb-2"
+                      >
+                        <p>
+                          <span className="font-bold">Name:</span>{" "}
+                          {employeeNames[shift.employeeId]}
+                        </p>
+                        <p>
+                          <span className="font-bold">Shift Start:</span>{" "}
+                          {shift.start}
+                        </p>
+                        <p>
+                          <span className="font-bold">Shift End:</span>{" "}
+                          {shift.end}
+                        </p>
+                        <p>
+                          <span className="font-bold">Days:</span>{" "}
+                          {shift.days.join(", ")}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
 
                 {/* SVG Elements */}
 
+                <svg
+                  onClick={() => handleEditClick(schedule)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-7 h-7 absolute top-2 right-2 cursor-pointer hover:fill-blue-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                  />
+                </svg>
                 <svg
                   onClick={() => handleNotifClick(schedule)}
                   xmlns="http://www.w3.org/2000/svg"
@@ -323,7 +429,7 @@ const SchedulesPage = () => {
                   viewBox="0 0 24 24"
                   strokeWidth="1.5"
                   stroke="currentColor"
-                  className="w-7 h-7 absolute top-2 right-2 cursor-pointer hover:fill-yellow-400"
+                  className="w-7 h-7 absolute top-10 right-2 cursor-pointer hover:fill-yellow-400"
                 >
                   <path
                     strokeLinecap="round"
@@ -331,7 +437,6 @@ const SchedulesPage = () => {
                     d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
                   />
                 </svg>
-
                 <svg
                   onClick={() => handleDeleteClick(schedule._id)}
                   xmlns="http://www.w3.org/2000/svg"
