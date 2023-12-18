@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
@@ -73,6 +74,7 @@ const SchedulesPage = () => {
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [editingScheduleId, setEditingScheduleId] = useState(null);
   const [editedSchedule, setEditedSchedule] = useState({ shifts: [] });
+  const navigate = useNavigate();
 
   //GET ONE EMPLOYEE
   const fetchEmployeeNames = async (schedules) => {
@@ -140,6 +142,7 @@ const SchedulesPage = () => {
 
   useEffect(() => {
     fetchSchedules();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDeleteClick = (scheduleId) => {
@@ -324,6 +327,23 @@ const SchedulesPage = () => {
           onCancel={() => setIsNotifModalVisible(false)}
         />
 
+        <svg
+          onClick={() => {
+            navigate("/home");
+          }}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-12 h-12 mt-10 ml-3 cursor-pointer hover:fill-blue-400"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
         <h1 className="flex justify-center text-2xl font-bold p-4">
           Schedules
         </h1>

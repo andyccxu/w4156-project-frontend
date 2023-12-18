@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { useNavigate } from 'react-router-dom';
+
 
 // Reusable EmployeeInput component
 const EmployeeInput = ({ label, value, onChange, type }) => (
@@ -159,6 +161,8 @@ const EmployeesPage = () => {
   const [isNotifModalVisible, setIsNotifModalVisible] = useState(false);
   const [employeeToNotify, setEmployeeToNotify] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
+
 
   //GET ALL EMPLOYEES, GET ONE EMPLOYEE, GET ALL NOTIFICATIONS,
   useEffect(() => {
@@ -412,6 +416,24 @@ const EmployeesPage = () => {
         {/* {error && <div className="text-red-500">Error: {error}</div>} */}
         {error && <div className="text-red-500"></div>}
         <div>
+          <svg
+            onClick={() => {
+              navigate('/home'); 
+            }}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-12 h-12 mt-10 ml-3 cursor-pointer hover:fill-blue-400"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+
           <h1 className="flex justify-center text-2xl font-bold mt-4">
             Employees
           </h1>
