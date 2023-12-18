@@ -404,7 +404,7 @@ const EmployeesPage = () => {
       });
     } catch (err) {
       // setError(err.message);
-      alert("Error adding new employee:", err.message);
+      alert("Error adding new employee:", err.response.data.message);
     }
   };
 

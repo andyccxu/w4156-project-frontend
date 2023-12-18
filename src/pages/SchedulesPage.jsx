@@ -119,6 +119,31 @@ const SchedulesPage = () => {
     }
   };
 
+  // FETCH FACILITY DATA
+  const fetchFacilityDetails = async (facilityId) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        throw new Error("No authorization token found");
+      }
+  
+      const response = await axios.get(
+        `http://localhost:8080/facilities/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching facility details:", error);
+      return null;
+    }
+  };
+  
+
   //GET ALL SCHEDULES
   const fetchSchedules = async () => {
     try {
@@ -218,7 +243,12 @@ const SchedulesPage = () => {
         }
       }
     } catch (error) {
-      alert("Error creating schedule:", error.message);
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(error.response.data.message);
+      } else {
+        // If the error is not from the API or doesn't have the expected format, show a generic message
+        alert("An unexpected error occurred.");
+      }
     }
   };
 
@@ -235,15 +265,30 @@ const SchedulesPage = () => {
         throw new Error("Authorization token not found");
       }
 
+      const facilityDetails = await fetchFacilityDetails(schedule.facilityId);
+
       for (const shift of schedule.shifts) {
         try {
-          const message = `Hi! Your shift details are as follows:\nShift: ${
-            shift.start
-          }, ${shift.end}\n, Days: ${shift.days.join(", ")}`;
-          const Id = shift.employeeId;
+          const facilityName = facilityDetails.facilityName;
+          const employeeName = employeeNames[shift.employeeId];
+          const startTime = shift.start;
+          const endTime = shift.end;
+    
+          const message = `Hi ${employeeName},
+
+Your new work shift is scheduled:
+- Days: ${shift.days.join(", ")}
+- From: ${startTime}
+- To: ${endTime}
+
+If you have any questions, contact your manager.
+
+Best,
+${facilityName}`;
+
 
           const notification = {
-            employeeId: Id,
+            employeeId: shift.employeeId,
             message: message,
           };
 
