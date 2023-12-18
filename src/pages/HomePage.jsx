@@ -126,7 +126,7 @@ const HomePage = () => {
       const response = await axios.get("http://localhost:8080/facilities");
       setFacility(response.data);
     } catch (error) {
-      alert(error);
+      console.log(error);
       // setFacility(null);
     }
   };

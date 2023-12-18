@@ -467,7 +467,7 @@ const EmployeesPage = () => {
                     />
                     <button
                       onClick={handleSave}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900"
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-900"
                     >
                       Save
                     </button>
